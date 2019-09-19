@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<tables>
+  <table id="1" parentid="-1">
+    <sourcetablename tableid ="1">Urunler</sourcetablename>
+    <destinationtablename tableid ="1">Product</destinationtablename>
+    <seperatername tableid ="1">urun</seperatername>
+    <fields>
+      <field tableid ="1">
+        <sourcefieldname>UrunID</sourcefieldname>
+        <destinationfieldname>ProductId</destinationfieldname>
+      </field>
+      <field tableid ="1">
+        <sourcefieldname>UrunAdi</sourcefieldname>
+        <destinationfieldname>ProductName</destinationfieldname>
+      </field>
+    </fields>
+    <table id="2">
+      <sourcetablename tableid ="2">Stoklar</sourcetablename>
+      <destinationtablename tableid ="2">Stock</destinationtablename>
+      <seperatername tableid ="2">Stok</seperatername>
+      <fields>
+        <field tableid ="2">
+          <sourcefieldname>Barkod</sourcefieldname>
+          <destinationfieldname>Barcode</destinationfieldname>
+        </field>
+        <field tableid ="2">
+          <sourcefieldname>Ozellik</sourcefieldname>
+          <destinationfieldname>Piece</destinationfieldname>
+        </field>
+      </fields>
+    </table>
+  </table>
+</tables>

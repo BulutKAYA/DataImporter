@@ -110,16 +110,16 @@ namespace DataImporter.XmlImport
 
             DataRow rTable = null;
             string productName = "";
+            string speraterName = "";
+            DataRow rEntity = null;
+
             XmlTextReader reader = new XmlTextReader(supplierUrl);
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    DataRow rEntity = null;
-
                     string elementName = reader.Name;
-                    string speraterName = "";
-
+                    
                     if (dtConfigTables.Select("seperatername = " + "'" + elementName + "'").Length > 0)
                     {
                         speraterName = elementName;
@@ -170,13 +170,16 @@ namespace DataImporter.XmlImport
             foreach(DataRow rStock in dtStock.Select())
             {
                 Product product = productManeger.Get(rStock["productName"].ToString());
-                string url = productManeger.GetSupplierUrl(product.ProductName);
-                if(url == supplierUrl)//burda bir ürünün bir tedarikci tarafından güncellenmesini garanti altına almış olduk
+                if(product != null)
                 {
-                    Stock stock = stockManeger.Get(rStock["Barcode"].ToString());
-                    stock.Piece = (int)rStock["Piece"];
-                    stockManeger.Update(stock);
-                    return true;
+                    string url = productManeger.GetSupplierUrl(product.ProductName);
+                    if (url == supplierUrl)//burda bir ürünün bir tedarikci tarafından güncellenmesini garanti altına almış olduk
+                    {
+                        Stock stock = stockManeger.Get(rStock["Barcode"].ToString());
+                        stock.Piece = (int)rStock["Piece"];
+                        stockManeger.Update(stock);
+                        return true;
+                    }
                 }
             }//aynı şeyleri product tablosu içinde yapabilirdik
             return false;

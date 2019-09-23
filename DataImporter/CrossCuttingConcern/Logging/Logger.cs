@@ -15,14 +15,14 @@ namespace DataImporter.CrossCuttingConcern.Logging
             FileSecurity fSecurity = new FileSecurity();
             string fileName = DateTime.Now.ToShortDateString();
             fileName =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())),
-               "CrossCuttingConcern\\LoggFiles", fileName);
+               "CrossCuttingConcern\\LoggFiles", fileName + ".xml");
             using (FileStream fs = File.Create(fileName, 1024, FileOptions.WriteThrough))
             {
                 byte[] context = new UTF8Encoding(true).GetBytes(xmlContext);
-                fs.Write(context, 0, xmlContext.Length);
+                fs.Write(context, 0, context.Length);
             }
             Console.WriteLine("Loglama işlemi gerçekleşti. " + fileName);
-            
+            Console.ReadLine();
         }
     }
 }

@@ -2,11 +2,12 @@
 using DataImporter.DatabaseRepository.EfRepository;
 using DataImporter.Entityes.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace DataImporter.XmlImport
 {
@@ -96,6 +97,7 @@ namespace DataImporter.XmlImport
                 }
             }
         }
+        
         private DataRow GetElementFieldConfigRow(string name)
         {
             if (dtConfigFields.Select("sourcefieldname=" + "'" + name + "'").Length > 0)
@@ -103,22 +105,26 @@ namespace DataImporter.XmlImport
             else
                 return null;
         }
+        
         public string LoadData()
         {
             List<string> fieldsToUpdateDestination =
                 new List<string> { "ProductName", "Barcode", "Piece" };//burası güncellenmesini istediğimiz alanlar
-
-            DataRow rTable = null;
+            
             string productName = "";
             string speraterName = "";
             DataRow rEntity = null;
+            DataRow rTable = null;
+            
+            XmlTextReader readerx = new XmlTextReader(supplierUrl);
+            XDocument xDocument = XDocument.Load(readerx);
+           
 
-            XmlTextReader reader = new XmlTextReader(supplierUrl);
-            while (reader.Read())
+            foreach (XElement element in xDocument.Descendants())
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                if (element.NodeType == XmlNodeType.Element)
                 {
-                    string elementName = reader.Name;
+                    string elementName = element.Name.ToString();
                     
                     if (dtConfigTables.Select("seperatername = " + "'" + elementName + "'").Length > 0)
                     {
@@ -148,11 +154,12 @@ namespace DataImporter.XmlImport
 
                         if (fieldsToUpdateDestination.Contains(destinationFieldName))
                         {
-                            rEntity[destinationFieldName] = reader.ReadElementString();//burası sadece bu iki tabloya göre özelleştirildi ama daha dinamik bi yapıya çevlilebilinir
+                            string result = element.Value;
+                            rEntity[destinationFieldName] = result;//burası sadece bu iki tabloya göre özelleştirildi ama daha dinamik bi yapıya çevlilebilinir
                             if (rTable["destinationtablename"].ToString() == "Product" &&
                                 destinationFieldName == "ProductName")
                             {
-                                productName = reader.ReadElementString();
+                                productName = result;
                             }
                             else if (rTable["destinationtablename"].ToString() == "Stock")
                             {
@@ -162,7 +169,8 @@ namespace DataImporter.XmlImport
                     }
                 }
             }
-            return "";//buranın okunan xml dosyasını dönderdiğini farzedebiliriz
+            
+            return xDocument.ToString();
         }
         
         public bool SaveData()
@@ -173,16 +181,19 @@ namespace DataImporter.XmlImport
                 if(product != null)
                 {
                     string url = productManeger.GetSupplierUrl(product.ProductName);
+                    
                     if (url == supplierUrl)//burda bir ürünün bir tedarikci tarafından güncellenmesini garanti altına almış olduk
                     {
                         Stock stock = stockManeger.Get(rStock["Barcode"].ToString());
-                        stock.Piece = (int)rStock["Piece"];
-                        stockManeger.Update(stock);
-                        return true;
+                        if(stock != null)
+                        {
+                            stock.Piece = Convert.ToInt32(rStock["Piece"].ToString());
+                            stockManeger.Update(stock);
+                        }
                     }
                 }
             }//aynı şeyleri product tablosu içinde yapabilirdik
-            return false;
+            return true;
         }
         public bool Validate()
         {//datalarlar aktarılmadan önce yapılması gereken kontroller burada yapılabilinir

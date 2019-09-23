@@ -19,10 +19,12 @@ namespace DataImporter.DatabaseRepository.EfRepository
         public String GetSupplierUrl(string name)
         {
             //burada primary key yerine productname ile işlem yapmak zorunda kaldım var olan datalar yüzünden
-            return (from a in context.Products
-                    join b in context.Suppliers on a.SupplierId equals b.SupplierId
-                    where a.ProductName == name
-                    select b.SupplierUrl).ToString();
+
+            string result = (from a in context.Products
+                          join b in context.Suppliers on a.SupplierId equals b.SupplierId
+                          where a.ProductName == name
+                          select b.SupplierUrl).SingleOrDefault();
+            return result;
         }
     }
 }

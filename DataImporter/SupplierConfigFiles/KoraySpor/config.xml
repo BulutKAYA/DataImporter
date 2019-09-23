@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <tables>
-  <table id="1" parentid="-1">
+  <table id="1">
     <sourcetablename tableid ="1">Urunler</sourcetablename>
     <destinationtablename tableid ="1">Product</destinationtablename>
     <seperatername tableid ="1">urun</seperatername>
